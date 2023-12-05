@@ -2,14 +2,19 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/tigertony2536/go-line-notify/config"
+	"github.com/tigertony2536/go-line-notify/model"
 )
 
 func main() {
-	// cfg := config.GetConfig("config/config.yaml")
+	cfg := config.GetConfig()
+	db := model.GetDB(cfg.DB)
 
-	config := config.GetConfig()
-	fmt.Println(config.DB)
-	fmt.Println(config.Token)
+	noti, err := db.GetByID(1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(noti)
 }

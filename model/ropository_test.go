@@ -2,6 +2,7 @@ package model_test
 
 import (
 	"testing"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
@@ -9,42 +10,56 @@ import (
 	"github.com/tigertony2536/go-line-notify/model"
 )
 
-func TestInsertMessage(t *testing.T) {
-	// tsk := model.Task{Name: "task1", Description: "Do Something", Time: }
+func TestInsertNotification(t *testing.T) {
+	cfg := config.GetConfig()
+	db := model.GetDB(cfg.DB)
+	tm := time.Now().Format(time.TimeOnly)
+
+	noti := model.Notification{
+		Message: "ส่งคลิปจิตอาสา",
+		Date:    "2023-12-30",
+		Time:    tm,
+	}
+
+	id, err := db.InsertNotification(noti)
+
+	expectedNoti, _ := db.GetByID(id)
+
+	assert.Equalf(t, expectedNoti.Message, noti.Message, "Expect %q got %q", expectedNoti.Message, noti.Message)
+	assert.Equalf(t, expectedNoti.Date, noti.Date, "Expect %q got %q", expectedNoti.Date, noti.Date)
+	assert.Equalf(t, expectedNoti.Time, noti.Time, "Expect %q got %q", expectedNoti.Time, noti.Time)
+	assert.NoError(t, err, "Insert notification to database successfully")
 }
 
 func TestGetByID(t *testing.T) {
-	dt := "2023-12-05"
-	tt := "09:00:00"
-
-	tc := []struct {
-		Name   string
-		ID     int
-		Rows   int
-		Result model.Nofify
+	tc := struct {
+		Name    string
+		ID      int
+		Message string
+		Date    string
+		Time    string
 	}{
-		{
-			Name: "Get 1 task Success",
-			ID:   1,
-			Rows: 1,
-			Result: model.Nofify{
-				ID:      1,
-				Message: "ส่งงาน",
-				Date:    dt,
-				Time:    tt,
-			},
-		},
+		Name:    "Get by ID Success",
+		ID:      19,
+		Message: "ส่งคลิปจิตอาสา",
+		Date:    "2023-12-30",
+		Time:    "09:00:00",
 	}
 
-	t.Run(tc[0].Name, func(t *testing.T) {
+	t.Run(tc.Name, func(t *testing.T) {
+
 		cfg := config.GetConfig()
 		db := model.GetDB(cfg.DB)
 
-		mes := db.GetByID(tc[0].ID)
+		noti, err := db.GetByID(19)
 
 		defer db.Close()
 
-		assert.Equalf(t, tc[0].Rows, len(mes), "Expected %d got %d", tc[0].Rows, len(mes))
+		assert.Equalf(t, tc.ID, noti.ID, "Expected %q got %q", tc.ID, noti.ID)
+		assert.Equalf(t, tc.Message, noti.Message, "Expected %q got %q", tc.Message, noti.Message)
+		assert.Equalf(t, tc.Date, noti.Date, "Expected %q got %q", tc.Date, noti.Date)
+		assert.Equalf(t, tc.Time, noti.Time, "Expected %q got %q", tc.Time, noti.Time)
+		assert.NoError(t, err, "No error")
 	})
 
 }

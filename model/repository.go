@@ -23,26 +23,26 @@ func GetDB(sc string) *DB {
 	return &DB{db}
 }
 
-func InsertMessage() {
+func (db *DB) InsertNotification(noti Notification) (int, error) {
+	result, err := db.Exec(`INSERT INTO notify(message, date, time) VALUES(?,?,?);`, noti.Message, noti.Date, noti.Time)
+	if err != nil {
+		return 0, err
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
 
+	return int(id), nil
 }
 
-func (d DB) GetByID(id int) []Nofify {
-	mes := []Nofify{}
-	rows, err := d.Query("SELECT * FROM notify WHERE id=?;", id)
+func (db *DB) GetByID(id int) (Notification, error) {
+	row := db.QueryRow("SELECT * FROM notify WHERE id=?;", id)
+
+	m := Notification{}
+	err := row.Scan(&m.ID, &m.Message, &m.Date, &m.Time)
 	if err != nil {
-		log.Fatal(err)
+		return Notification{}, err
 	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		m := Nofify{}
-		err = rows.Scan(&m.ID, &m.Message, &m.Date, &m.Time)
-		if err != nil {
-			log.Fatal(err)
-		}
-		mes = append(mes, m)
-	}
-	return mes
+	return m, nil
 }

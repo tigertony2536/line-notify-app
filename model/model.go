@@ -1,6 +1,6 @@
 package model
 
-type Nofify struct {
+type Notification struct {
 	ID      int
 	Message string
 	Date    string
