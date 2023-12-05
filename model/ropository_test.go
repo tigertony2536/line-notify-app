@@ -21,14 +21,14 @@ func TestGetByID(t *testing.T) {
 		Name   string
 		ID     int
 		Rows   int
-		Result model.Message
+		Result model.Nofify
 	}{
 		{
 			Name: "Get 1 task Success",
 			ID:   1,
 			Rows: 1,
-			Result: model.Message{
-				Id:      1,
+			Result: model.Nofify{
+				ID:      1,
 				Message: "ส่งงาน",
 				Date:    dt,
 				Time:    tt,

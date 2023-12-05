@@ -27,8 +27,8 @@ func InsertMessage() {
 
 }
 
-func (d DB) GetByID(id int) []Message {
-	mes := []Message{}
+func (d DB) GetByID(id int) []Nofify {
+	mes := []Nofify{}
 	rows, err := d.Query("SELECT * FROM notify WHERE id=?;", id)
 	if err != nil {
 		log.Fatal(err)
@@ -37,8 +37,8 @@ func (d DB) GetByID(id int) []Message {
 	defer rows.Close()
 
 	for rows.Next() {
-		m := Message{}
-		err = rows.Scan(&m.Id, &m.Message, &m.Date, &m.Time)
+		m := Nofify{}
+		err = rows.Scan(&m.ID, &m.Message, &m.Date, &m.Time)
 		if err != nil {
 			log.Fatal(err)
 		}
