@@ -46,3 +46,22 @@ func (db *DB) GetByID(id int) (Notification, error) {
 	}
 	return m, nil
 }
+
+func (db *DB) GetByDate(start, end string) ([]Notification, error) {
+	rows, err := db.Query("SELECT * FROM notify WHERE Date BETWEEN ? AND ?", start, end)
+	if err != nil {
+		return []Notification{}, err
+	}
+
+	data := []Notification{}
+	defer rows.Close()
+	for rows.Next() {
+		noti := Notification{}
+		err := rows.Scan(&noti.ID, &noti.Message, &noti.Date, &noti.Time)
+		if err != nil {
+			return []Notification{}, err
+		}
+		data = append(data, noti)
+	}
+	return data, nil
+}

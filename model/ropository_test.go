@@ -10,6 +10,19 @@ import (
 	"github.com/tigertony2536/go-line-notify/model"
 )
 
+func TestGetDB(t *testing.T) {
+	cfg := config.GetConfig()
+	db := model.GetDB(cfg.DB)
+	db.Ping()
+	expectType := model.DB{}
+
+	t.Run("get db success", func(t *testing.T) {
+		assert.IsTypef(t, &expectType, db, "Expected %T  got %T", &expectType, db)
+		assert.NoErrorf(t, db.Ping(), "Connect db successfully")
+	})
+
+}
+
 func TestInsertNotification(t *testing.T) {
 	cfg := config.GetConfig()
 	db := model.GetDB(cfg.DB)
@@ -29,6 +42,7 @@ func TestInsertNotification(t *testing.T) {
 	assert.Equalf(t, expectedNoti.Date, noti.Date, "Expect %q got %q", expectedNoti.Date, noti.Date)
 	assert.Equalf(t, expectedNoti.Time, noti.Time, "Expect %q got %q", expectedNoti.Time, noti.Time)
 	assert.NoError(t, err, "Insert notification to database successfully")
+
 }
 
 func TestGetByID(t *testing.T) {
@@ -64,15 +78,37 @@ func TestGetByID(t *testing.T) {
 
 }
 
-func TestGetDB(t *testing.T) {
-	cfg := config.GetConfig()
-	db := model.GetDB(cfg.DB)
-	db.Ping()
-	expectType := model.DB{}
+func TestGetByDate(t *testing.T) {
+	tc := []struct {
+		Name               string
+		Start              string
+		End                string
+		ExpectedRowsNumber int
+		ExpectedNotiID     []int
+	}{
+		{
+			Name:               "Get by date success: multiple noti",
+			Start:              "2023-12-01",
+			End:                "2023-12-30",
+			ExpectedRowsNumber: 2,
+			ExpectedNotiID:     []int{29, 31},
+		},
+	}
 
-	t.Run("get db success", func(t *testing.T) {
-		assert.IsTypef(t, &expectType, db, "Expected %T  got %T", &expectType, db)
-		assert.NoErrorf(t, db.Ping(), "Connect db successfully")
+	t.Run(tc[0].Name, func(t *testing.T) {
+
+		cfg := config.GetConfig()
+		db := model.GetDB(cfg.DB)
+
+		noti, err := db.GetByDate("2023-12-01", "2023-12-30")
+
+		notiID := []int{}
+
+		for _, n := range noti {
+			notiID = append(notiID, n.ID)
+		}
+		assert.Equalf(t, tc[0].ExpectedRowsNumber, len(noti), "Expect %d of  result got %d", tc[0].ExpectedRowsNumber, len(noti))
+		assert.Equalf(t, tc[0].ExpectedNotiID, notiID, "Expect result ID %d got %d", tc[0].ExpectedNotiID, notiID)
+		assert.NoError(t, err, "No Error")
 	})
-
 }
