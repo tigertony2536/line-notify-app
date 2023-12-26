@@ -54,10 +54,10 @@ func TestGetByID(t *testing.T) {
 		Time    string
 	}{
 		Name:    "Get by ID Success",
-		ID:      19,
+		ID:      29,
 		Message: "ส่งคลิปจิตอาสา",
 		Date:    "2023-12-30",
-		Time:    "09:00:00",
+		Time:    "22:48:52",
 	}
 
 	t.Run(tc.Name, func(t *testing.T) {
@@ -65,7 +65,7 @@ func TestGetByID(t *testing.T) {
 		cfg := config.GetConfig()
 		db := model.GetDB(cfg.DB)
 
-		noti, err := db.GetByID(19)
+		noti, err := db.GetByID(tc.ID)
 
 		defer db.Close()
 
@@ -89,9 +89,9 @@ func TestGetByDate(t *testing.T) {
 		{
 			Name:               "Get by date success: multiple noti",
 			Start:              "2023-12-01",
-			End:                "2023-12-30",
+			End:                "2023-12-07",
 			ExpectedRowsNumber: 2,
-			ExpectedNotiID:     []int{29, 31},
+			ExpectedNotiID:     []int{31, 44},
 		},
 	}
 
@@ -100,7 +100,7 @@ func TestGetByDate(t *testing.T) {
 		cfg := config.GetConfig()
 		db := model.GetDB(cfg.DB)
 
-		noti, err := db.GetByDate("2023-12-01", "2023-12-30")
+		noti, err := db.GetByDate(tc[0].Start, tc[0].End)
 
 		notiID := []int{}
 

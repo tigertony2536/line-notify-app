@@ -7,6 +7,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type Notification struct {
+	ID      int
+	Message string
+	Date    string
+	Time    string
+}
+
 type DB struct {
 	*sql.DB
 }
@@ -48,7 +55,7 @@ func (db *DB) GetByID(id int) (Notification, error) {
 }
 
 func (db *DB) GetByDate(start, end string) ([]Notification, error) {
-	rows, err := db.Query("SELECT * FROM notify WHERE Date BETWEEN ? AND ?", start, end)
+	rows, err := db.Query("SELECT * FROM notify WHERE date BETWEEN ? AND ?;", start, end)
 	if err != nil {
 		return []Notification{}, err
 	}
