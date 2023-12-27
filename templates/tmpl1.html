@@ -8,11 +8,13 @@
 <body>
     <form action="/" method="post">
         <label for="start">start </label><input id="start" name="start" type="date"><br>
-        <label for="end">end </label><input id="end" name="end" type="date">
+        <label for="end">end </label><input id="end" name="end" type="date"><br>
         <input type="submit" value="Submit">
     </form>
+    <br>
+    <h2>From: {{(index . 0).Date}} To: {{(len . | dec | index . ).Date}}</h2>
     {{range .}}
-    <p>{{.}}</p>
+        <p>{{.Date}} {{.Time}} {{.Message}}</p>
     {{end}}
 </body>
 </html>

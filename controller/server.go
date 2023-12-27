@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"text/template"
@@ -12,7 +11,10 @@ var (
 )
 
 func init() {
-	tmp = template.Must(template.New("tmpl1.html").ParseFiles("D:\\dev\\go\\go-line-notify\\templates\\tmpl1.html"))
+	funcMap := template.FuncMap{
+		"dec": func(i int) int { return i - 1 },
+	}
+	tmp = template.Must(template.New("tmpl1.html").Funcs(funcMap).ParseFiles("D:\\dev\\go\\go-line-notify\\templates\\tmpl1.html"))
 }
 
 type Server struct {
@@ -37,5 +39,4 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	tmp.Execute(w, data)
-	fmt.Fprintln(w, "From: ", start, "To: ", end)
 }
