@@ -7,8 +7,10 @@ import (
 )
 
 type Config struct {
-	Token string `mapstructure:"token"`
-	DB    string `mapstructure:"database"`
+	Token     string `mapstructure:"token"`
+	DB        string `mapstructure:"database"`
+	Url       string `mapstructure:"linenotifyUrl"`
+	LineToken string `mapstructure:"lineToken"`
 }
 
 func GetConfig() Config {

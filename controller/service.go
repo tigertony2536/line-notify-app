@@ -1,6 +1,10 @@
 package controller
 
 import (
+	"io"
+	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/tigertony2536/go-line-notify/config"
@@ -28,13 +32,31 @@ func getWeekDay() (time.Time, time.Time) {
 	return start, end
 }
 
-func SendNotification() bool {
+func SendNotification(noti model.Notification) (string, error) {
+	v := url.Values{}
+	v.Set("message", "test")
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", cfg.Url, strings.NewReader(v.Encode()))
 
-	// client := &http.Client{}
-	// res, err := http.Post("https://notify-api.line.me/api/notify", "multipart/form-data", noti)
-	// panic(err)
-	// re
-	return true
+	token := "Bearer " + cfg.LineToken
+
+	if err != nil {
+		return "", err
+	}
+	// req.Header.Set("Content-Type", "multipart/form-data")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Authorization", token)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	respText, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	s := string(respText)
+	return s, nil
 }
 
 func GetWeeklyNoti() ([]model.Notification, error) {
