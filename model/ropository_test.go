@@ -104,10 +104,10 @@ func TestGetByDate(t *testing.T) {
 
 		notiID := []int{}
 
-		for _, n := range noti {
+		for _, n := range noti.Notifications {
 			notiID = append(notiID, n.ID)
 		}
-		assert.Equalf(t, tc[0].ExpectedRowsNumber, len(noti), "Expect %d of  result got %d", tc[0].ExpectedRowsNumber, len(noti))
+		assert.Equalf(t, tc[0].ExpectedRowsNumber, len(noti.Notifications), "Expect %d of  result got %d", tc[0].ExpectedRowsNumber, len(noti.Notifications))
 		assert.Equalf(t, tc[0].ExpectedNotiID, notiID, "Expect result ID %d got %d", tc[0].ExpectedNotiID, notiID)
 		assert.NoError(t, err, "No Error")
 	})

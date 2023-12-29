@@ -14,6 +14,12 @@ type Notification struct {
 	Time    string
 }
 
+type NotiGroup struct {
+	Start         string
+	Stop          string
+	Notifications []Notification
+}
+
 type DB struct {
 	*sql.DB
 }
@@ -54,10 +60,11 @@ func (db *DB) GetByID(id int) (Notification, error) {
 	return m, nil
 }
 
-func (db *DB) GetByDate(start, end string) ([]Notification, error) {
+func (db *DB) GetByDate(start, end string) (NotiGroup, error) {
+	result := NotiGroup{start, end, nil}
 	rows, err := db.Query("SELECT * FROM notify WHERE date BETWEEN ? AND ?;", start, end)
 	if err != nil {
-		return []Notification{}, err
+		return result, err
 	}
 
 	data := []Notification{}
@@ -66,9 +73,10 @@ func (db *DB) GetByDate(start, end string) ([]Notification, error) {
 		noti := Notification{}
 		err := rows.Scan(&noti.ID, &noti.Message, &noti.Date, &noti.Time)
 		if err != nil {
-			return []Notification{}, err
+			return result, err
 		}
 		data = append(data, noti)
 	}
-	return data, nil
+	result.Notifications = data
+	return result, nil
 }
